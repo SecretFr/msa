@@ -1,7 +1,7 @@
 package com.example.userservice.controller;
 
-
 import com.example.userservice.dto.UserDto;
+import com.example.userservice.entity.UserEntity;
 import com.example.userservice.service.UserService;
 import com.example.userservice.vo.Greeting;
 import com.example.userservice.vo.RequestUser;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -43,8 +45,8 @@ public class UserServiceController {
 
     //RequestMapping은 method 속성을 이용해서 메소에서 처리할 전송 방식을 지정할 수 있다.
     @RequestMapping(value = "/health_check", method = RequestMethod.GET)
-    public String status(){
-        return "It's Working in User Service";
+    public String status(HttpServletRequest request){
+        return String.format("port %s", request.getServerPort());
     }
 
     @GetMapping("/message")
@@ -70,5 +72,29 @@ public class UserServiceController {
         ResponseUser responseUser = mapper.map(userDto, ResponseUser.class);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
+    }
+
+    //전체 사용자 목록
+    @GetMapping("/users")
+    public List<ResponseUser> getUser(){
+        Iterable<UserEntity> userList = userService.getUserByAll();
+
+        List<ResponseUser> result = new ArrayList<>();
+
+        //lamda식, 디버깅하기 쉽지 않다라는 단점이 있습니다.
+        userList.forEach(v -> {
+            result.add(new ModelMapper().map(v, ResponseUser.class));
+        });
+
+        return result;
+    }
+
+    //사용자 상세보기 (with 주문 목록)
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") String userId){
+        UserDto userDto = userService.getUserByUserId(userId);
+        ResponseUser returnValue = new ModelMapper().map(userDto, ResponseUser.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(returnValue);
     }
 }

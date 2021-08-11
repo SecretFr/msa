@@ -4,6 +4,63 @@ server:
 spring:
   application:
     name: apigateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: first-service
+          uri: lb://FIRST-SERVICE
+              #http://localhost:8081/
+          predicates:
+            - Path=/first-service/**
+          filters:
+            - AddRequestHeader=first-request, jaewon-yang
+            - AddResponseHeader=first-response, Hi-jaewon
+        - id: second-service
+          uri: lb://SECOND-SERVICE
+              #http://localhost:8082/
+          predicates:
+            - Path=/second-service/**
+          filters:
+            - AddRequestHeader=second-request, kenneth
+            - AddResponseHeader=second-response, Hello-kenneth
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/login
+            - Method=POST
+          filters:
+            #- AddRequestHeader=user-service-request, user
+            #- AddResponseHeader=user-service-response, Hi-user
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/users
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: catalog-service
+          uri: lb://CATALOG-SERVICE
+          predicates:
+            - Path=/catalog-service/**
+          filters:
+            - RewritePath=/catalog-service/(?<segment>.*), /$\{segment}
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/order-service/**
+          filters:
+            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
 
 eureka:
   client:
