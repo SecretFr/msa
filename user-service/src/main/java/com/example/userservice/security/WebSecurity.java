@@ -40,7 +40,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     private AuthenticationFilter getApplicationFilter() throws Exception{
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(
-                authenticationManager(),null, null);
+                authenticationManager(), userService, env);
 
         return authenticationFilter;
     }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 @RestController
@@ -76,7 +77,10 @@ public class UserServiceController {
 
     //전체 사용자 목록
     @GetMapping("/users")
-    public List<ResponseUser> getUser(){
+    public List<ResponseUser> getUser(HttpServletRequest request){
+//        Enumeration<String> em = request.getHeaderNames();
+//        request.getHeader("token");
+
         Iterable<UserEntity> userList = userService.getUserByAll();
 
         List<ResponseUser> result = new ArrayList<>();
