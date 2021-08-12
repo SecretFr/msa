@@ -47,7 +47,12 @@ public class UserServiceController {
     //RequestMapping은 method 속성을 이용해서 메소에서 처리할 전송 방식을 지정할 수 있다.
     @RequestMapping(value = "/health_check", method = RequestMethod.GET)
     public String status(HttpServletRequest request){
-        return String.format("port %s", request.getServerPort());
+        return String.format("It's Working in User Service"
+                +", port(local.server.port)=" + env.getProperty("local.server.port")
+                +", port(server.port)=" + env.getProperty("server.port")
+                +", with token secret=" + env.getProperty("token.secret")
+                +", with token time=" + env.getProperty("token.expiration_time")
+                +", gateway_ip=" + env.getProperty("gateway.ip"));
     }
 
     @GetMapping("/message")
