@@ -1,0 +1,8 @@
+#application.yml 보다 먼저 실행
+#postman 에서 확인 가능!
+encrypt:
+  key-store:
+    location: file://${user.home}/Desktop/Linux/work/demo_git/tmax-msa/keystore/apiEncryptionKey.jks
+    password: 1q2w3e4r
+    alias: apiEncryptionKey
+#  key: abcdefghijklmnopqrstuvwxyz1234567890

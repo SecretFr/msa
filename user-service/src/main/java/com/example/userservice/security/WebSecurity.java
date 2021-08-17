@@ -3,6 +3,7 @@ package com.example.userservice.security;
 import com.example.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
+//@Profile("dev")
 public class WebSecurity extends WebSecurityConfigurerAdapter {
     private UserService userService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -33,8 +35,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/actuator/**").permitAll();
         http.authorizeRequests().antMatchers("/h2-console/**").permitAll();
         http.authorizeRequests().antMatchers("/**")
-//                        .access("hasIpAddress('10.10.20.48') or hasIpAddress('home')")
-                        .hasIpAddress("10.10.20.48") // IP Address
+                        .access("hasIpAddress('10.10.20.48') or hasIpAddress('192.168.201.106')")
+//                        .hasIpAddress("10.10.20.48") // IP Address
                         .and()
                         .addFilter(getApplicationFilter());
         http.headers().frameOptions().disable();
