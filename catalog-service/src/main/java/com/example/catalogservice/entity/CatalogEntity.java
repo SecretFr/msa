@@ -22,7 +22,7 @@ public class CatalogEntity implements Serializable {
     private String productName;
 
     @Column(nullable = false)
-    private String stock;
+    private Integer stock;
 
     @Column(nullable = false)
     private Integer unitPrice;
