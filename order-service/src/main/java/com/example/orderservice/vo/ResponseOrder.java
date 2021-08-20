@@ -15,4 +15,5 @@ public class ResponseOrder {
     private Date createdAt;
 
     private String orderId;
+    private String instanceId;
 }

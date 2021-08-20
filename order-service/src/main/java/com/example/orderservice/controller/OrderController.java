@@ -80,13 +80,13 @@ public class OrderController {
             OrderDto orderDto = mapper.map(orderDetails, OrderDto.class);
             orderDto.setUserId(userId);
             /*jpa*/
-//            OrderDto createdOrder = orderService.createOrder(orderDto);
-//            ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);
+            OrderDto createdOrder = orderService.createOrder(orderDto);
+//            ResponseOrder responseOrder1 = mapper.map(createdOrder, ResponseOrder.class);
             /*kafka*/
             orderDto.setOrderId(UUID.randomUUID().toString());
             orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice());
             ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
-
+            log.info(orderDto.getInstanceId());
             kafkaProducer.send("exam-catalog-topic", orderDto);
             orderProducer.send("orders", orderDto);
 
@@ -139,5 +139,42 @@ public class OrderController {
         });
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @PutMapping("/{orderId}/orders")
+    public ResponseEntity<ResponseOrder> updateOrder(@PathVariable String orderId,
+                                                     @RequestBody RequestOrder orderDetails){
+        boolean isAvailable = true;
+
+        ResponseCatalog responseCatalog = catalogServiceClient.getCatalog(orderDetails.getProductId());
+
+        if(responseCatalog != null &&
+                responseCatalog.getStock() - orderDetails.getQty() < 0){
+            isAvailable = false;
+        }
+
+        if(isAvailable){
+            ModelMapper mapper = new ModelMapper();
+            mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+            OrderDto orderDto = mapper.map(orderDetails, OrderDto.class);
+            orderDto.setOrderId(orderId);
+
+            orderService.updateOrder(orderDto);
+
+            orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice());
+
+            ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
+
+            kafkaProducer.send("exam-catalog-topic", orderDto);
+            orderProducer.send("orders", orderDto);
+
+            log.info("After update order data");
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
+        }else {
+            log.info("After update order data");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
     }
 }
