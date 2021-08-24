@@ -8,6 +8,7 @@ import com.example.orderservice.mq.KafkaProducer;
 import com.example.orderservice.mq.OrderProducer;
 import com.example.orderservice.service.OrderService;
 import com.example.orderservice.vo.RequestOrder;
+import com.example.orderservice.vo.RequestUpdateOrder;
 import com.example.orderservice.vo.ResponseCatalog;
 import com.example.orderservice.vo.ResponseOrder;
 import lombok.extern.slf4j.Slf4j;
@@ -83,12 +84,12 @@ public class OrderController {
             OrderDto createdOrder = orderService.createOrder(orderDto);
 //            ResponseOrder responseOrder1 = mapper.map(createdOrder, ResponseOrder.class);
             /*kafka*/
-            orderDto.setOrderId(UUID.randomUUID().toString());
+//            orderDto.setOrderId(UUID.randomUUID().toString());
             orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice());
             ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
             log.info(orderDto.getInstanceId());
             kafkaProducer.send("exam-catalog-topic", orderDto);
-            orderProducer.send("orders", orderDto);
+            orderProducer.send("demo_topic_orders", orderDto);
 
             /*store a json file with orderDto*/
 //            JSONObject jsonObject = new JSONObject();
@@ -141,40 +142,19 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @PutMapping("/{orderId}/orders")
-    public ResponseEntity<ResponseOrder> updateOrder(@PathVariable String orderId,
-                                                     @RequestBody RequestOrder orderDetails){
-        boolean isAvailable = true;
+    @PutMapping("/orders/{orderId}/{id}")
+    public ResponseEntity<ResponseOrder> updateOrder(@PathVariable("orderId") String orderId, @PathVariable("id") Long id,
+                                                     @RequestBody RequestUpdateOrder orderDetails){
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        ResponseCatalog responseCatalog = catalogServiceClient.getCatalog(orderDetails.getProductId());
+        OrderDto orderDto = mapper.map(orderDetails, OrderDto.class);
+        orderDto.setOrderId(orderId);
+        orderDto = orderService.updateOrder(orderDto, id);
 
-        if(responseCatalog != null &&
-                responseCatalog.getStock() - orderDetails.getQty() < 0){
-            isAvailable = false;
-        }
+        ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
+        orderProducer.send("demo_topic_orders", orderDto);
 
-        if(isAvailable){
-            ModelMapper mapper = new ModelMapper();
-            mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
-            OrderDto orderDto = mapper.map(orderDetails, OrderDto.class);
-            orderDto.setOrderId(orderId);
-
-            orderService.updateOrder(orderDto);
-
-            orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice());
-
-            ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
-
-            kafkaProducer.send("exam-catalog-topic", orderDto);
-            orderProducer.send("orders", orderDto);
-
-            log.info("After update order data");
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
-        }else {
-            log.info("After update order data");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
     }
 }

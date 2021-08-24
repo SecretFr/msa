@@ -10,6 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -57,16 +62,24 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public OrderDto updateOrder(OrderDto orderDetail) {
+    public OrderDto updateOrder(OrderDto orderDetail, Long id) {
+        Date now = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
         OrderEntity orderEntity = repository.findByOrderId(orderDetail.getOrderId());
+
         OrderDto orderDto = modelMapper.map(orderEntity, OrderDto.class);
+        orderDto.setId(id);
         orderDto.setQty(orderDetail.getQty());
         orderDto.setUnitPrice(orderDetail.getUnitPrice());
         orderDto.setTotalPrice(orderDetail.getQty() * orderDetail.getUnitPrice());
-        orderDto.setUserId(orderDetail.getUserId());
+        try {
+            orderDto.setModifiedAt(dateFormat.parse(dateFormat.format(now)));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         orderEntity = modelMapper.map(orderDto, OrderEntity.class);
 

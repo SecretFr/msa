@@ -35,7 +35,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/actuator/**").permitAll();
         http.authorizeRequests().antMatchers("/h2-console/**").permitAll();
         http.authorizeRequests().antMatchers("/**")
-                        .access("hasIpAddress('10.10.20.48') or hasIpAddress('192.168.201.106') or hasIpAddress('172.30.1.50')")
+                        .access("hasIpAddress('10.10.20.48') or hasIpAddress('192.168.201.106') or hasIpAddress('172.30.1.50') or hasIpAddress('192.168.219.105')")
 //                        .hasIpAddress("10.10.20.48") // IP Address
                         .and()
                         .addFilter(getApplicationFilter());

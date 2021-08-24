@@ -13,6 +13,7 @@ public class ResponseOrder {
     private Integer unitPrice;
     private Integer totalPrice;
     private Date createdAt;
+    private Date modifiedAt;
 
     private String orderId;
     private String instanceId;
