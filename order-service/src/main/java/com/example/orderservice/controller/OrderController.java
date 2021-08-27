@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @RestController
@@ -82,14 +83,14 @@ public class OrderController {
             orderDto.setUserId(userId);
             /*jpa*/
             OrderDto createdOrder = orderService.createOrder(orderDto);
-//            ResponseOrder responseOrder1 = mapper.map(createdOrder, ResponseOrder.class);
+            ResponseOrder responseOrder1 = mapper.map(createdOrder, ResponseOrder.class);
             /*kafka*/
 //            orderDto.setOrderId(UUID.randomUUID().toString());
             orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice());
             ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
             log.info(orderDto.getInstanceId());
             kafkaProducer.send("exam-catalog-topic", orderDto);
-            orderProducer.send("demo_topic_orders", orderDto);
+//            orderProducer.send("demo_topic_orders", orderDto);
 
             /*store a json file with orderDto*/
 //            JSONObject jsonObject = new JSONObject();
@@ -120,7 +121,7 @@ public class OrderController {
 //            }
 
             log.info("After added orders data");
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder1);
         }
         else{
             log.info("After added orders data");
@@ -132,12 +133,26 @@ public class OrderController {
 
     @GetMapping("/{userId}/orders")
     public ResponseEntity<List<ResponseOrder>> getOrder(@PathVariable("userId") String userId) throws Exception {
+        log.info("Before retrieve orders data");
         Iterable<OrderEntity> orderList = orderService.getOrderByUserId(userId);
 
         List<ResponseOrder> result = new ArrayList<>();
         orderList.forEach(v -> {
             result.add(new ModelMapper().map(v, ResponseOrder.class));
         });
+
+        /* 오류 발생 테스트 코드 */
+        Random rnd = new Random(System.currentTimeMillis());
+        int time = rnd.nextInt(3);
+        if(time % 2 == 0) {
+            try {
+                Thread.sleep(10000);
+                throw new Exception();
+            } catch (InterruptedException ex) {
+                log.warn(ex.getMessage());
+            }
+        }
+        log.info("After retrieve orders data");
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

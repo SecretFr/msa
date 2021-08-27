@@ -9,8 +9,8 @@ spring:
   cloud:
     config:
       server:
-        native:
-          search-locations: file://${user.home}/Desktop/Linux/work/demo_git/tmax-msa/git-local-repo
+#        native:
+#          search-locations: file://${user.home}/Desktop/Linux/work/demo_git/tmax-msa/git-local-repo
         git:
           uri: https://github.com/SecretFr/ecommerce
           #uri: file:///Users/daramg/Desktop/Linux/work/demo_git/tmax-msa/git-local-repo
@@ -19,8 +19,8 @@ spring:
   rabbitmq:
     host: 127.0.0.1
     port: 5672
-    username: daramg
-    password: 1234
+    username: guest
+    password: guset
 
 management:
   endpoints:

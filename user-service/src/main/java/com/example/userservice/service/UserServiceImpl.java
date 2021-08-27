@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
@@ -39,15 +41,19 @@ public class UserServiceImpl implements UserService{
 
     OrderServiceClient orderServiceClient;
 
+    CircuitBreakerFactory circuitBreakerFactory;
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            BCryptPasswordEncoder passwordEncoder,
                            Environment env,
-                           OrderServiceClient orderServiceClient) {
+                           OrderServiceClient orderServiceClient,
+                           CircuitBreakerFactory circuitBreakerFactory) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.env = env;
         this.orderServiceClient = orderServiceClient;
+        this.circuitBreakerFactory = circuitBreakerFactory;
     }
 
     @Override
@@ -90,16 +96,25 @@ public class UserServiceImpl implements UserService{
         /*#2) OpenFeign*/
 //        List<ResponseOrder> orderList = orderServiceClient.getOrder(userId);
 //        List<ResponseOrder> orderList = null;
-        try{
-            List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
-            userDto.setOrders(orderList);
-//            orderList = orderServiceClient.getOrderWrong(userId);
-//            orderServiceClient.getOrderWrong(userId);
-        }
-        catch (FeignException ex){
-            log.error(ex.getMessage());
-        }
-//        userDto.setOrders(orderList);
+//        try{
+//            orderList = orderServiceClient.getOrders(userId);
+////            userDto.setOrders(orderList);
+////            orderList = orderServiceClient.getOrderWrong(userId);
+////            orderServiceClient.getOrderWrong(userId);
+//        }
+//        catch (FeignException ex){
+//            log.error(ex.getMessage());
+//        }
+        List<ResponseOrder> orderList = null;
+
+        /*circuit breaker*/
+        log.info("Before call order-service");
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("my-circuitbreaker");
+        orderList = circuitBreaker.run(() -> orderServiceClient.getOrders(userId),
+                throwable -> new ArrayList<>());
+        log.info("After call order-service");
+
+        userDto.setOrders(orderList);
 
         return userDto;
     }
