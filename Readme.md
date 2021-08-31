@@ -1,7 +1,10 @@
-# 클라우드 개발자 양성과정
+# 클라우드 MSA 토이 프로젝트
+
+## rabbimq config source
+[소스코드](https://github.com/SecretFr/ecommerce)
 
 ## 상용 클라우드를 이용한 어플리케이션 배포
-[소스코드](https://github.com/namgonkim/msa-ecommerce-tmax)
+[소스코드](https://github.com/SecretFr/msa)
 * 토이 프로젝트를 통한 msa 어플리케이션 실습
     - Docker간 네트워크
     - 도커 레지스트리
