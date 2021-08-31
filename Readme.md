@@ -193,6 +193,8 @@ services:
     image: mynode:latest
     ports: 
       - "8080:8080"
+    depends_on: 
+      - mydb
   mydb:
     image: mariadb:latest
     volumes: 
