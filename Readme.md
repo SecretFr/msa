@@ -144,7 +144,10 @@ docker-compose-single-broker.yml 실행
 ```
 docker run -d -p 9411:9411 --name zipkin --network ecommerce-network openzipkin/zipkin
 ```
-
+* User Service
+```
+docker run -d --name user-service --network ecommerce-network -e "spring.cloud.config.uri=http://config-service:8888" -e "eureka.client.serviceUrl.defaultZone=http://service-discovery:8761/eureka/" -e "spring.rabbitmq.host=rabbitmq" -e "spring.zipkin-base-url=http://zipkin:9411" -e "logging.file=/api-logs/users-ms.log" -p 50001:50001 linkclean/user-service:1.0
+```
 * Order Service
 ```
 
