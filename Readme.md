@@ -222,6 +222,7 @@ services:
     ports: 
       - "23306:3306"
 ```
+* docker-compose-single-broker.yml
 ```docker-compose-single-broker.yml
 version: '2'
 services:
@@ -252,6 +253,7 @@ networks:
   my-network:
     name: ecommerce-network
 ```
+* 위 설정 안될시 bitnami kafka 이미지 이용
 ```bitnami
 version: '2'
 
