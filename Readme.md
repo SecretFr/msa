@@ -181,7 +181,10 @@ created_at datetime default now()
 
 - docker-compose commanc
 > docker-compose -f docker-compose.yml up {appname}
+
 > docker-compose down {appname}
+
+> docker-compose stop {appname}
 - docker-compose yaml 생성
 ```docker-compose.yml
 version: "3.9"
@@ -190,4 +193,13 @@ services:
     image: mynode:latest
     ports: 
       - "8080:8080"
+  mydb:
+    image: mariadb:latest
+    volumes: 
+      - ../dbdata:/var/lib/mysql
+    environment: 
+      MARIADB_ROOT_PASSWORD: test1357
+      MARIADB_DATABASE: mydb
+    ports: 
+      - "23306:3306"
 ```
