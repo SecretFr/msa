@@ -134,6 +134,17 @@ docker run -d --name apigateway-service --network ecommerce-network -p 8000:8000
 docker run -d --name mariadb --network ecommerce-network -p 3306:3306 wodndl895/mydb:2.0
 
 ```
+* kafka
+```
+kafka 이미지 pull
+docker-compose-single-broker.yml 파일 수정
+docker-compose-single-broker.yml 실행
+```
+* zipkin
+```
+docker run -d -p 9411:9411 --name zipkin --network ecommerce-network openzipkin/zipkin
+```
+
 * Order Service
 ```
 
@@ -204,4 +215,64 @@ services:
       MARIADB_DATABASE: mydb
     ports: 
       - "23306:3306"
+```
+```docker-compose-single-broker.yml
+version: '2'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.100
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 172.18.0.101
+      KAFKA_CREATE_TOPICS: "test:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on: 
+      - zookeeper
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.101
+
+networks: 
+  my-network:
+    name: ecommerce-network
+```
+```bitnami
+version: '2'
+
+networks:
+  my-network:
+    name: ecommerce-network
+
+services:
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - "2181:2181"
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    networks:
+      my-network:
+        ipv4_address: 172.18.0.100
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - "9092:9092"
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:2181"
+    depends_on: 
+      - zookeeper
+    networks:
+      my-network:
+        ipv4_address: 172.18.0.101
 ```
