@@ -63,6 +63,9 @@
 * 클라우드 레파지토리에서 도커로 pull
 > docker pull {aws-iam-id}.dkr.ecr.{aws-region}.amazonaws.com/{aws-user-id}/mydb
 
+* Mac M1 호환 가능하게 image build 및 푸쉬하기
+> docker buildx build --platform linux/amd64,linux/arm64 -t linkclean/config-service:1.0 -f ./Dockerfile --push .
+
 ## 토이 프로젝트 배포 작업
 * kafka - zookeeper
 * zipkin: 서비스 호출 추적(Trace ID, Span ID)
@@ -131,6 +134,10 @@ docker run -d --name apigateway-service --network ecommerce-network -p 8000:8000
 docker run -d --name mariadb --network ecommerce-network -p 3306:3306 wodndl895/mydb:2.0
 
 ```
+* Order Service
+```
+
+```
 
 #### 해야할 일
 1. mariadb 이미지 생성
@@ -167,3 +174,20 @@ created_at datetime default now()
 
 2. jpa사용, kafka connect 코드 삭제
 * order-service
+
+### docker-compose
+* 만들어진 이미지파일을 가지고 Container 실행 방법을 정의하고 실행하는 도구
+* Docker 커맨드 or 복잡한 설정을 쉼게 관리하기 위한 도구
+
+- docker-compose commanc
+> docker-compose -f docker-compose.yml up {appname}
+> docker-compose down {appname}
+- docker-compose yaml 생성
+```docker-compose.yml
+version: "3.9"
+services: 
+  myweb:
+    image: mynode:latest
+    ports: 
+      - "8080:8080"
+```
