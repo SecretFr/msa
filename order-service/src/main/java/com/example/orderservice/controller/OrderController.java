@@ -83,13 +83,13 @@ public class OrderController {
             orderDto.setUserId(userId);
             /*jpa*/
             OrderDto createdOrder = orderService.createOrder(orderDto);
-            ResponseOrder responseOrder1 = mapper.map(createdOrder, ResponseOrder.class);
+//            ResponseOrder responseOrder1 = mapper.map(createdOrder, ResponseOrder.class);
             /*kafka*/
 //            orderDto.setOrderId(UUID.randomUUID().toString());
-            orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice());
-            ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
+//            orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice());
+            ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);
             log.info(orderDto.getInstanceId());
-            kafkaProducer.send("exam-catalog-topic", orderDto);
+            kafkaProducer.send("exam-catalog-topic", createdOrder);
 //            orderProducer.send("demo_topic_orders", orderDto);
 
             /*store a json file with orderDto*/
@@ -121,7 +121,7 @@ public class OrderController {
 //            }
 
             log.info("After added orders data");
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder1);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
         }
         else{
             log.info("After added orders data");

@@ -153,11 +153,15 @@ docker run -d --name user-service --network ecommerce-network -e "spring.cloud.c
 ```
 * Order Service
 ```
-
+docker run -d --network ecommerce-network --name order-service -e "spring.zipkin.base-url=http://zipkin:9411" -e "eureka.client.serviceUrl.defaultZone=http://service-discovery:8761/eureka/" -e "spring.datasource.url=jdbc:mariadb://mariadb:3306/mydb" -e "logging.file=/api-logs/orders-ws.log" linkclean/order-service:1.0
+```
+* Catalog Service
+```
+docker run -d --network ecommerce-network  --name catalog-service -e "eureka.client.serviceUrl.defaultZone=http://service-discovery:8761/eureka/" -e "logging.file=/api-logs/catalogs-ws.log" linkclean/catalog-service:1.0
 ```
 
 #### 해야할 일
-1. mariadb 이미지 생성
+1. mariadb 이미지 생성  
 - 이미지 생성할 dockerfile
 ```Dockerfile
 # mariadb -> mydb-image
@@ -284,3 +288,9 @@ services:
       my-network:
         ipv4_address: 172.18.0.101
 ```
+
+* zombie process 삭제
+> http://127.0.0.1:8761/eureka/apps/USER-SERVICE/cebdfc598db9:ffaa5472fdfe640779c6038e92ae60e0
+
+* mariadb-client
+> apt-get install mariadb-client

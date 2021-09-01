@@ -1,0 +1,121 @@
+version: "3.9"
+services: 
+  rabbitmq:
+    image: rabbitmq:management
+    ports: 
+      - "15672:15672"
+      - "5672:5672"
+      - "15671:15671"
+      - "5671:5671"
+      - "4369:4369"
+    environment: 
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.2
+  config-service:
+    image: linkclean/config-service:1.0
+    ports: 
+      - "8888:8888"
+    environment: 
+      sping.spring.rabbitmq.host: rabbitmq
+      spring.profiles.active: git
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.3
+  service-discovery:
+    image: linkclean/service-discovery:1.0
+    ports: 
+      - "8761:8761"
+    environment: 
+      spring.cloud.config.uri: http://config-service:8888
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.4
+  apigateway-service:
+    image: linkclean/apigateway-service:1.0
+    ports: 
+      - "8000:8000"
+    environment: 
+      spring.cloud.config.uri: http://config-service:8888
+      spring.rabbitmq.host: rabbitmq
+      eureka.client.serviceUrl.defaultZone: http://service-discovery:8761/eureka/
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.5
+  mariadb:
+    image: wodndl895/mydb:2.0
+    environment: 
+      MARIADB_ROOT_PASSWORD: test1234
+      MARIADB_DATABASE: mydb
+    ports: 
+      - "13306:3306"
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.6
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.100
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 172.18.0.101
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_CREATE_TOPICS: "test:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: 172.18.0.100:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on: 
+      - zookeeper
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.101
+  zipkin:
+    image: openzipkin/zipkin
+    ports: 
+      - "9411:9411"
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.7
+  user-service:
+    image: linkclean/user-service:1.0
+    ports: 
+      - "50001:50001"
+    environment: 
+      spring.cloud.config.uri: http://config-service:8888
+      eureka.client.serviceUrl.defaultZone: http://service-discovery:8761/eureka/
+      spring.rabbitmq.host: rabbitmq
+      spring.zipkin-base-url: http://zipkin:9411
+      logging.file: /api-logs/users-ms.log
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.8
+  order-service:
+    image: linkclean/order-service:1.0
+    environment: 
+      spring.zipkin.base-url: http://zipkin:9411
+      eureka.client.serviceUrl.defaultZone: http://service-discovery:8761/eureka/
+      spring.datasource.url: jdbc:mariadb://mariadb:3306/mydb
+      logging.file: /api-logs/orders-ws.log"
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.9
+  catalog-service:
+    image: linkclean/catalog-service:1.0
+    environment: 
+      eureka.client.serviceUrl.defaultZone: http://service-discovery:8761/eureka/
+      logging.file: /api-logs/catalogs-ws.log
+    networks: 
+      my-network:
+        ipv4_address: 172.18.0.10
+
+networks: 
+  my-network:
+    name: ecommerce-network
