@@ -13,4 +13,12 @@ public class SamsungTV implements TV{
     public void volumeDown(){
         System.out.println("samsungTV.... volumeDown");
     }
+
+    private void initMethod() {
+        System.out.println("Init SamsungTV object");
+    }
+
+    private void destroyMethod() {
+        System.out.println("Destroy SumsungTV object");
+    }
 }

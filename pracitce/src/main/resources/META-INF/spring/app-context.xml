@@ -8,7 +8,11 @@
     <description>Example configuration to get you started.</description>
 
     <!--  <context:component-scan base-package="spring.sts.sample" /> -->
-    <bean id="tv" class="com.example.pracitce.coupling.SamsungTV"></bean>
+    <bean id="tv" class="com.example.pracitce.coupling.SamsungTV"
+          init-method="initMethod"
+          destroy-method="destroyMethod"
+          lazy-init="true"
+          scope="prototype"></bean>
     <bean id="tv2" class="com.example.pracitce.coupling.LgTV"></bean>
     <!--  <bean id="tv" class="ioc.LgTV"></bean> -->
 
