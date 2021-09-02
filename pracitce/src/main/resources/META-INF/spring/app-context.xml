@@ -12,8 +12,22 @@
           init-method="initMethod"
           destroy-method="destroyMethod"
           lazy-init="true"
-          scope="prototype"></bean>
-    <bean id="tv2" class="com.example.pracitce.coupling.LgTV"></bean>
+          scope="prototype">
+<!--        <constructor-arg ref="speaker">-->
+
+<!--        </constructor-arg>-->
+<!--        <constructor-arg value="2700000">-->
+
+<!--        </constructor-arg>-->
+        <property name="speaker" ref="speaker"></property>
+        <property name="price" value="2700000"></property>
+    </bean>
+    <bean id="tv2" class="com.example.pracitce.coupling.LgTV">
+
+    </bean>
+    <bean id="speaker" class="com.example.pracitce.coupling.AppleSpeaker">
+
+    </bean>
     <!--  <bean id="tv" class="ioc.LgTV"></bean> -->
 
 </beans>

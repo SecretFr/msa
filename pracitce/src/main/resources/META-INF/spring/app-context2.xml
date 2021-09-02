@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <description>Example configuration to get you started.</description>
+    <bean id="coll" class="com.example.pracitce.coll.CollectionBean">
+        <property name="list">
+            <list>
+                <value>서울시 강남구 역삼동</value>
+                <value>성남시 분당구 정자동</value>
+                <value>인천시 연수구 송소동</value>
+            </list>
+        </property>
+        <property name="map">
+            <map>
+                <entry>
+                    <key><value>고길동</value></key>
+                        <value>서울시 강남구 역삼동</value>
+                </entry>
+                <entry>
+                    <key><value>양재원</value></key>
+                    <value>경기도 성남시 분당구</value>
+                </entry>
+            </map>
+        </property>
+        <property name="proper">
+            <props>
+                <prop key="하이잉">proper test</prop>
+                <prop key="장난감">test 123123</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

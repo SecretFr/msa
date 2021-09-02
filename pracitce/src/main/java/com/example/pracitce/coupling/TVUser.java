@@ -12,9 +12,6 @@ public class TVUser {
                 new GenericXmlApplicationContext("META-INF/spring/app-context.xml");
 
         TV tv = (TV) factory.getBean("tv");
-        TV tv2 = (TV) factory.getBean("tv");
-        TV tv3 = (TV) factory.getBean("tv");
-        TV tv4 = (TV) factory.getBean("tv");
 
         tv.volumeDown();
         tv.volumeUp();
