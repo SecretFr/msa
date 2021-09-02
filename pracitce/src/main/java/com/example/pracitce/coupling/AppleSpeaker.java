@@ -1,5 +1,8 @@
 package com.example.pracitce.coupling;
 
+import org.springframework.stereotype.Component;
+
+@Component("apple")
 public class AppleSpeaker {
     public AppleSpeaker(){
         System.out.println(">>> AppleSpeaker 객체 생성");

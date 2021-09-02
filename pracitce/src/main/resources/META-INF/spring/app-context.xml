@@ -7,27 +7,27 @@
 
     <description>Example configuration to get you started.</description>
 
-    <!--  <context:component-scan base-package="spring.sts.sample" /> -->
-    <bean id="tv" class="com.example.pracitce.coupling.SamsungTV"
-          init-method="initMethod"
-          destroy-method="destroyMethod"
-          lazy-init="true"
-          scope="prototype">
-<!--        <constructor-arg ref="speaker">-->
+      <context:component-scan base-package="com.example.pracitce.coupling" />
+<!--    <bean id="tv" class="com.example.pracitce.coupling.SamsungTV"-->
+<!--          init-method="initMethod"-->
+<!--          destroy-method="destroyMethod"-->
+<!--          lazy-init="true"-->
+<!--          scope="prototype">-->
+<!--&lt;!&ndash;        <constructor-arg ref="speaker">&ndash;&gt;-->
 
-<!--        </constructor-arg>-->
-<!--        <constructor-arg value="2700000">-->
+<!--&lt;!&ndash;        </constructor-arg>&ndash;&gt;-->
+<!--&lt;!&ndash;        <constructor-arg value="2700000">&ndash;&gt;-->
 
-<!--        </constructor-arg>-->
-        <property name="speaker" ref="speaker"></property>
-        <property name="price" value="2700000"></property>
-    </bean>
-    <bean id="tv2" class="com.example.pracitce.coupling.LgTV">
+<!--&lt;!&ndash;        </constructor-arg>&ndash;&gt;-->
+<!--        <property name="speaker" ref="speaker"></property>-->
+<!--        <property name="price" value="2700000"></property>-->
+<!--    </bean>-->
+<!--    <bean id="tv2" class="com.example.pracitce.coupling.LgTV">-->
 
-    </bean>
-    <bean id="speaker" class="com.example.pracitce.coupling.AppleSpeaker">
+<!--    </bean>-->
+<!--    <bean id="speaker" class="com.example.pracitce.coupling.AppleSpeaker">-->
 
-    </bean>
+<!--    </bean>-->
     <!--  <bean id="tv" class="ioc.LgTV"></bean> -->
 
 </beans>

@@ -1,6 +1,18 @@
 package com.example.pracitce.coupling;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.InitBinder;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+@Component
+@Lazy
 public class SamsungTV implements TV{
+    @Autowired
     private AppleSpeaker speaker;
     private int price;
 
@@ -8,7 +20,8 @@ public class SamsungTV implements TV{
         System.out.println(">>>SamsungTV(1) 객체 생성");
     }
 
-    public SamsungTV(AppleSpeaker speaker, int price) {
+    @Autowired
+    public SamsungTV(AppleSpeaker speaker, @Value("27000") int price) {
         System.out.println(">>>SamsungTV(2) 객체 생성");
         this.speaker = speaker;
         this.price = price;
@@ -28,10 +41,12 @@ public class SamsungTV implements TV{
         speaker.volumeDown();
     }
 
+    @PostConstruct
     private void initMethod() {
         System.out.println("Init SamsungTV object");
     }
 
+    @PreDestroy
     private void destroyMethod() {
         System.out.println("Destroy SumsungTV object");
     }
